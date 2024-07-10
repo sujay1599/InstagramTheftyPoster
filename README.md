@@ -47,11 +47,10 @@ python main.py
 ```
 
 ## Main Functions
-```
-main.py
-```
+
 
 ## The script performs the following tasks:
+## main.py
 ```
 Login to Instagram: Uses the credentials provided in config.yaml.
 Scrape Reels: Scrapes the specified number of reels from the profiles listed in the configuration.
@@ -61,6 +60,9 @@ start.py
 Prompts the user to enter configuration details and saves them in config.yaml.
 Saves scrapped items to folder called download within the project.
 ```
+
+## delete.py
+This script reads the upload_log.txt file to get a list of uploaded reels and deletes the corresponding .mp4, .mp4.jpg, and .txt files from the downloads folder.
 
 ## Log Files
 ```
