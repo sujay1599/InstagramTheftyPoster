@@ -1,6 +1,7 @@
 import os
 import yaml
 import json
+from cryptography.fernet import Fernet
 from instagrapi import Client
 from time import sleep
 from datetime import datetime, timedelta
@@ -10,8 +11,16 @@ import moviepy.editor as mp
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-INSTAGRAM_USERNAME = config['instagram']['username']
-INSTAGRAM_PASSWORD = config['instagram']['password']
+# Load the encryption key and encrypted credentials
+key = config['key'].encode()
+cipher_suite = Fernet(key)
+encrypted_username = config['instagram']['username'].encode()
+encrypted_password = config['instagram']['password'].encode()
+
+# Decrypt the credentials
+INSTAGRAM_USERNAME = cipher_suite.decrypt(encrypted_username).decode()
+INSTAGRAM_PASSWORD = cipher_suite.decrypt(encrypted_password).decode()
+
 SCRAPING_ENABLED = config['scraping']['enabled']
 UPLOAD_ENABLED = config['uploading']['enabled']
 PERIODICALLY_DELETE_REELS_UPLOADED = config['deleting']['periodically_delete_reels_uploaded']
