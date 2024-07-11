@@ -1,4 +1,3 @@
-Here's a comprehensive README file for your project:
 
 ```markdown
 # Instagram Reels Scraper and Uploader
