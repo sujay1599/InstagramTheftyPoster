@@ -90,5 +90,3 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 This script is intended for educational and personal use only. Use it responsibly and ensure you comply with Instagram's terms of service and guidelines.
 ```
-
-This README file provides comprehensive instructions for setting up and using the script, including how to use `start.py` to generate the `config.yaml` file, the installation process, and usage details.
