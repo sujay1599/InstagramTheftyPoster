@@ -1,74 +1,100 @@
-# InstagramTheftPoster
 
-InstagramTheftyPoster allows users to log in to Instagram, scrape profiles for reels, and download the reels to a designated download folder within the project. Additionally, the downloaded reels can be uploaded to the user's Instagram account or posted on their Instagram stories.
+# InstagramTheftyPoster
 
-## Requirements
+InstagramTheftyPoster is a Python project designed to automate the process of scraping, uploading, and optionally deleting Instagram reels. The application uses encrypted credentials to log in to Instagram, scrape reels from specified profiles, upload them with new descriptions, and manage the deletion of uploaded reels based on user-defined intervals.
 
-To install the required packages, run:
+## Features
 
-```
-pip install -r requirements.txt
-```
+- **Scrape Instagram Reels**: Automatically scrape reels from specified Instagram profiles.
+- **Upload Reels**: Upload the scraped reels to another Instagram account with new descriptions and optional hashtags.
+- **Add to Story**: Optionally add uploaded reels to Instagram stories.
+- **Periodic Deletion**: Delete uploaded reels either immediately after upload or based on a user-defined interval.
 
+## Installation
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/sujay1599/InstagramTheftyPoster.git
+   cd InstagramTheftyPoster
+   ```
+
+2. **Create and activate a virtual environment (optional but recommended):**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
+
+3. **Install the required packages:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Configuration
 
-Before running the scripts, create a `config.yaml` file by running `start.py`. 
+1. **Run the `start.py` script to configure the application:**
 
-This will prompt you to enter your Instagram credentials, scraping profiles, and other configurations.
+   ```bash
+   python start.py
+   ```
 
-```yaml
-instagram:
-  username: ''
-  password: ''
-scraping:
-  enabled: true
-  profiles: ''
-  num_reels: 10
-  scrape_interval_minutes: 60
-uploading:
-  enabled: true
-  delete_after_upload: true
-  upload_interval_minutes: 5
-  add_to_story: true
-hashtags:
-  use_hashtags: true
-  hashtags_list: '#example #hashtag'
-```
+   This script will prompt you for the following information:
+   - Instagram username and password (encrypted and stored in `config.yaml`)
+   - Scraping options (enable/disable, profiles to scrape, number of reels per profile, interval between scrapes)
+   - Uploading options (enable/disable, interval between uploads, add to story)
+   - Hashtags options (enable/disable, list of hashtags)
+   - Deletion options (enable/disable periodic deletion, interval between deletions)
+
+2. **Configuration file (`config.yaml`):**
+
+   The configuration details provided during the `start.py` script execution will be saved in a `config.yaml` file. Here is an example of what the configuration file might look like:
+
+   ```yaml
+   instagram:
+     username: <encrypted_username>
+     password: <encrypted_password>
+   key: <encryption_key>
+   scraping:
+     enabled: true
+     profiles: profile1 profile2
+     num_reels: 5
+     scrape_interval_minutes: 60
+   uploading:
+     enabled: true
+     upload_interval_minutes: 30
+     add_to_story: true
+   hashtags:
+     use_hashtags: true
+     hashtags_list: "#example #hashtag"
+   deleting:
+     periodically_delete_reels_uploaded: true
+     delete_interval_minutes: 1440
+   ```
 
 ## Usage
-Configure: Run start.py to create the config.yaml file.
-Run: Execute main.py to start scraping and uploading reels based on the configuration.
 
-## Commands
-```
-python start.py
-python main.py
-```
+1. **Run the main script to start the automation:**
 
-## Main Functions
+   ```bash
+   python main.py
+   ```
 
+   The script will:
+   - Log in to Instagram using the provided credentials.
+   - Scrape reels from specified profiles at the defined interval.
+   - Upload scraped reels with new descriptions and optional hashtags.
+   - Add uploaded reels to stories if enabled.
+   - Delete uploaded reels based on the defined deletion interval.
 
-## The script performs the following tasks:
-## main.py
-```
-Login to Instagram: Uses the credentials provided in config.yaml.
-Scrape Reels: Scrapes the specified number of reels from the profiles listed in the configuration.
-Upload Reels: Uploads the scraped reels to your Instagram account and optionally adds them to your story.
-Logging: Keeps track of uploaded reels to avoid duplicates.
-start.py
-Prompts the user to enter configuration details and saves them in config.yaml.
-Saves scrapped items to folder called download within the project.
-```
+## Contributing
 
-## delete.py
-This script reads the upload_log.txt file to get a list of uploaded reels and deletes the corresponding .mp4, .mp4.jpg, and .txt files from the downloads folder.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Log Files
-```
-upload_log.txt: Keeps track of the IDs of uploaded reels to prevent re-uploading the same content.
-
-last_scraped_timestamp.txt: Stores the timestamp of the last scraped reel to ensure that only new reels are scraped in subsequent runs.
-```
 ## License
-This project is licensed under the MIT License.
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+```
+
+This `README.md` provides a comprehensive guide to setting up, configuring, and running your project, as well as information on contributing and the project's license.
