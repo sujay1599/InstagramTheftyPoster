@@ -1,0 +1,16 @@
+hashtags:
+  hashtags_list: 
+  use_hashtags: true
+instagram:
+  password: 
+  username: 
+scraping:
+  enabled: true
+  num_reels: 10
+  profiles: gamerguffaws,besthoodleaks,offendoverload
+  scrape_interval_minutes: 60
+uploading:
+  add_to_story: true
+  delete_after_upload: true
+  enabled: true
+  upload_interval_minutes: 5

@@ -1,16 +1,22 @@
+deleting:
+  delete_interval_minutes: 10
+  periodically_delete_reels_uploaded: true
 hashtags:
-  hashtags_list: 
+  hashtags_list: '#explorepage #jokes #funnymeme #memes #meme #funnymemes #funny #dankmemes
+    #memesdaily #lol #dankmeme #dailymemes #memepage #comedy #dank #memestagram #lmao
+    #edgymemes #fun #humor #offensivememes #memer #follow #instagram #like #tiktok
+    #love #funnyvideos #anime'
   use_hashtags: true
 instagram:
-  password: 
-  username: 
+  password: gAAAAABmj12we9D_iiZ_fM3n14DUzt6W3zbLoHBBjeJbbT-yY_FU_3D6FgKNu3b9JR9veGy0htCFZVICemCNPgKeH638iZx1VDDhEzQBF37BZy83wPyINso=
+  username: gAAAAABmj12wMpG2Ijg8Fj8SDk_Oaoid6PWfAihkWIMm942kOFpEIN56wlUcwgxVUbZy-CN0c7ovjjKwVGGXEaxPuFt1oIztTw==
+key: SF9oLtkSuohryr5QGYCks8ToE65G6rpAenpo9HH64FY=
 scraping:
   enabled: true
   num_reels: 10
-  profiles: gamerguffaws,besthoodleaks,offendoverload
+  profiles: memeofmemess
   scrape_interval_minutes: 60
 uploading:
-  add_to_story: true
-  delete_after_upload: true
+  add_to_story: false
   enabled: true
-  upload_interval_minutes: 5
+  upload_interval_minutes: 2

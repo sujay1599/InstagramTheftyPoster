@@ -1,9 +1,8 @@
 import os
 import yaml
 import json
-from cryptography.fernet import Fernet
 from instagrapi import Client
-from time import sleep, time
+from time import sleep
 from datetime import datetime, timedelta
 import moviepy.editor as mp
 
@@ -11,26 +10,17 @@ import moviepy.editor as mp
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-# Load the encryption key and encrypted credentials
-key = config['key'].encode()
-cipher_suite = Fernet(key)
-encrypted_username = config['instagram']['username'].encode()
-encrypted_password = config['instagram']['password'].encode()
-
-# Decrypt the credentials
-INSTAGRAM_USERNAME = cipher_suite.decrypt(encrypted_username).decode()
-INSTAGRAM_PASSWORD = cipher_suite.decrypt(encrypted_password).decode()
-
+INSTAGRAM_USERNAME = config['instagram']['username']
+INSTAGRAM_PASSWORD = config['instagram']['password']
 SCRAPING_ENABLED = config['scraping']['enabled']
 UPLOAD_ENABLED = config['uploading']['enabled']
-PERIODICALLY_DELETE_REELS_UPLOADED = config['deleting']['periodically_delete_reels_uploaded']
+DELETE_AFTER_UPLOAD = config['uploading']['delete_after_upload']
 NUM_REELS = config['scraping']['num_reels']
 USE_HASHTAGS = config['hashtags']['use_hashtags']
 HASHTAGS_LIST = config['hashtags'].get('hashtags_list', '')
 UPLOAD_INTERVAL_MINUTES = config['uploading']['upload_interval_minutes']
 ADD_TO_STORY = config['uploading']['add_to_story']
 SCRAPE_INTERVAL_MINUTES = config['scraping']['scrape_interval_minutes']
-DELETE_INTERVAL_MINUTES = config['deleting'].get('delete_interval_minutes', 0)
 
 # Initialize the Instagram client
 cl = Client()
@@ -55,10 +45,7 @@ else:
 
 if os.path.exists(last_scraped_file):
     with open(last_scraped_file, 'r') as file:
-        try:
-            last_scraped_timestamp = int(file.read().strip())
-        except ValueError:
-            last_scraped_timestamp = 0
+        last_scraped_timestamp = int(file.read().strip())
 else:
     last_scraped_timestamp = 0
 
@@ -157,12 +144,12 @@ def upload_reels_with_new_descriptions(unuploaded_reels, username):
         # Update the set of uploaded reels
         uploaded_reels.add(f"{username}_{reel_id}")
         
-        # Immediate deletion if DELETE_INTERVAL_MINUTES is 0
-        if PERIODICALLY_DELETE_REELS_UPLOADED and DELETE_INTERVAL_MINUTES == 0:
+        if DELETE_AFTER_UPLOAD:
+            sleep(5)  # Wait for a few seconds to ensure file is no longer in use
             try:
                 os.remove(media_path)
                 os.remove(description_path)
-                print(f"Deleted reel: {reel_id} and its description file immediately after upload")
+                print(f"Deleted reel: {reel_id} and its description file")
             except PermissionError as e:
                 print(f"Failed to delete reel: {reel_id}, {e}")
         
@@ -171,60 +158,20 @@ def upload_reels_with_new_descriptions(unuploaded_reels, username):
         print(f"Waiting for {UPLOAD_INTERVAL_MINUTES} minutes before next upload.")
         sleep(UPLOAD_INTERVAL_MINUTES * 60)
 
-def delete_uploaded_files():
-    # Load the log file
-    if os.path.exists(log_filename):
-        with open(log_filename, 'r') as log_file:
-            uploaded_reels = set(line.strip() for line in log_file)
-    else:
-        uploaded_reels = set()
-
-    # Delete files in the downloads folder that match the log
-    downloads_dir = 'downloads'
-
-    for filename in os.listdir(downloads_dir):
-        if filename.endswith('.mp4') or filename.endswith('.txt') or filename.endswith('.mp4.jpg'):
-            base_filename = '_'.join(filename.split('_')[:2])  # Extract username and reel_id part
-            if base_filename in uploaded_reels:
-                try:
-                    os.remove(os.path.join(downloads_dir, filename))
-                    print(f"Deleted file: {filename}")
-                except Exception as e:
-                    print(f"Failed to delete {filename}: {e}")
-
-    print("Periodic deletion process completed.")
-
 def main():
     global last_scraped_timestamp
-    last_deletion_time = time()
-    last_scrape_time = time() - (SCRAPE_INTERVAL_MINUTES * 60)  # Start with scraping
-    last_upload_time = time() - (UPLOAD_INTERVAL_MINUTES * 60)  # Ensure upload happens if enabled
-    
-    while True:
-        current_time = time()
-        
-        if SCRAPING_ENABLED and (current_time - last_scrape_time) >= SCRAPE_INTERVAL_MINUTES * 60:
-            profiles_to_scrape = config['scraping']['profiles'].split()
-            for profile in profiles_to_scrape:
-                print(f"Scraping profile: {profile}")
-                reels = scrape_reels(profile, num_reels=NUM_REELS)
-                print(f"Finished scraping reels for profile: {profile}")
-            last_scrape_time = current_time
-        
-        if UPLOAD_ENABLED and (current_time - last_upload_time) >= UPLOAD_INTERVAL_MINUTES * 60:
-            profiles_to_scrape = config['scraping']['profiles'].split()
-            for profile in profiles_to_scrape:
+    if SCRAPING_ENABLED:
+        profiles_to_scrape = config['scraping']['profiles'].split(',')
+        next_scrape_time = datetime.now() + timedelta(minutes=SCRAPE_INTERVAL_MINUTES)
+        for profile in profiles_to_scrape:
+            print(f"Scraping profile: {profile}")
+            reels = scrape_reels(profile, num_reels=NUM_REELS)
+            print(f"Finished scraping reels for profile: {profile}")
+            print(f"Next scrape at: {next_scrape_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            if UPLOAD_ENABLED:
                 print("Starting upload of scraped reels.")
                 unuploaded_reels = get_unuploaded_reels()
                 upload_reels_with_new_descriptions(unuploaded_reels, profile)
-            last_upload_time = current_time
-        
-        if PERIODICALLY_DELETE_REELS_UPLOADED and (current_time - last_deletion_time) >= DELETE_INTERVAL_MINUTES * 60:
-            print(f"Starting periodic deletion of uploaded reels.")
-            delete_uploaded_files()
-            last_deletion_time = current_time
-        
-        sleep(60)  # Check every minute for updates
 
 if __name__ == "__main__":
     main()
